@@ -1,14 +1,11 @@
-[build]
-  builder = "NIXPACKS"
-
-[build.nixpacksPlan.phases.setup]
+[phases.setup]
   nixPkgs = ["nodejs_20"]
 
-[build.nixpacksPlan.phases.install]
-  cmds = [
-    "cd frontend && npm install && npm run build && cd ..",
-    "cd backend && npm install"
-  ]
+[phases.install]
+  cmds = ["npm install"]
+
+[phases.build]
+  cmds = ["npm run build --workspace=frontend"]
 
 [start]
   cmd = "node backend/server.js"

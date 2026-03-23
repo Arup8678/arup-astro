@@ -1,8 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const authRoutes = require('./routes/auth.routes');
 const horoscopeRoutes = require('./routes/horoscope.routes');
@@ -44,7 +45,6 @@ app.get('/api/health', (req, res) => res.json({ status: 'OK', service: 'Quantum 
 
 // Serve Frontend in Production
 if (process.env.NODE_ENV === 'production') {
-  const path = require('path');
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
   app.get('*', (req, res) => {
