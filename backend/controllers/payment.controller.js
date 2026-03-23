@@ -4,10 +4,15 @@ const Transaction = require('../models/Transaction');
 const Report = require('../models/Report');
 const User = require('../models/User');
 
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+let razorpay;
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+} else {
+    console.warn('⚠️ Razorpay keys are missing. Payment features will be disabled.');
+}
 
 const PLANS = {
     mini: { amount: 4900, label: '₹49 Mini Report' },

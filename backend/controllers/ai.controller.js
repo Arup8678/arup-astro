@@ -2,7 +2,12 @@ const Report = require('../models/Report');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const axios = require('axios');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+let genAI;
+if (process.env.GEMINI_API_KEY) {
+    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+} else {
+    console.warn('⚠️ GEMINI_API_KEY is missing. AI features will be disabled.');
+}
 
 exports.analyzePalmReading = async (req, res) => {
     try {
@@ -22,6 +27,8 @@ exports.analyzePalmReading = async (req, res) => {
         };
 
         const prompt = `You are an expert palm reader (Palmist). Analyze this image of a palm. Return the analysis STRICTLY as a JSON object with this exact structure: {"palmType": "String", "lifeLine": "String", "heartLine": "String", "headLine": "String", "fateLine": "String", "overallScore": Number (0-100)}. Do not include markdown code block syntax formatting or any other text, just the raw JSON.`;
+
+        if (!genAI) return res.status(503).json({ error: 'AI service is temporarily unavailable (missing API key)' });
 
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const aiResponse = await model.generateContent({
@@ -89,6 +96,8 @@ exports.analyzeFaceReading = async (req, res) => {
         };
 
         const prompt = `You are an expert face reader (Physiognomy). Analyze this face. Return the analysis STRICTLY as a JSON object with this exact structure: {"faceShape": "String (e.g. Oval, Round...)", "eyes": "String", "nose": "String", "forehead": "String", "smile": "String", "wealthIndicator": "String (e.g. High, Moderate...)", "personalityTraits": "String summary", "leadershipScore": Number (0-100), "spiritualityScore": Number (0-100)}. Do not include markdown code block syntax formatting or any other text, just the raw JSON.`;
+
+        if (!genAI) return res.status(503).json({ error: 'AI service is temporarily unavailable (missing API key)' });
 
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const aiResponse = await model.generateContent({
