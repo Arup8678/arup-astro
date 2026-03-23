@@ -3,13 +3,18 @@ import axios from '../api/axios';
 import { toast } from 'react-hot-toast';
 import { Calendar, Clock, MapPin, User, Download, Unlock, Star } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import TimeSelect from '../components/TimeSelect';
 
 const InputField = ({ label, icon: Icon, type = 'text', value, onChange, placeholder, required }) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', fontWeight: 600, color: '#8a8aa8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             <Icon size={13} color="#d4af37" /> {label}
         </label>
-        <input type={type} required={required} placeholder={placeholder} value={value} onChange={onChange} />
+        {type === 'time' ? (
+            <TimeSelect required={required} value={value} onChange={onChange} />
+        ) : (
+            <input type={type} required={required} placeholder={placeholder} value={value} onChange={onChange} />
+        )}
     </div>
 );
 

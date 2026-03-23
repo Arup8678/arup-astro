@@ -42,6 +42,16 @@ app.use('/api/admin', adminRoutes);
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'OK', service: 'Quantum Within API' }));
 
+// Serve Frontend in Production
+if (process.env.NODE_ENV === 'production') {
+  const path = require('path');
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend', 'dist', 'index.html'));
+  });
+}
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);

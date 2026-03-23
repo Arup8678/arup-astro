@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Sparkles, Moon, Star, Sun, Shield, Scan, Wallet, Quote, ChevronDown, CheckCircle, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import TimeSelect from '../components/TimeSelect';
+import axios from '../api/axios';
+import { toast } from 'react-hot-toast';
 
 /* ── Star canvas background ────────────────────────── */
 const StarCanvas = () => {
@@ -176,10 +179,28 @@ const Home = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ name: '', dateOfBirth: '', timeOfBirth: '', placeOfBirth: '' });
+    const [activeTab, setActiveTab] = useState('horoscope');
+    const [rashiResult, setRashiResult] = useState(null);
+    const [rashiLoading, setRashiLoading] = useState(false);
 
     const handleHoroscopeSubmit = (e) => {
         e.preventDefault();
         navigate('/kundali', { state: formData });
+    };
+
+    const handleRashiSubmit = async (e) => {
+        e.preventDefault();
+        setRashiLoading(true);
+        try {
+            const lang = localStorage.getItem('lang') || 'en';
+            const { data } = await axios.post('/kundali/rashi', { ...formData, language: lang });
+            setRashiResult(data);
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to calculate Rashi');
+        } finally {
+            setRashiLoading(false);
+        }
     };
 
     const services = [
@@ -270,30 +291,62 @@ const Home = () => {
 
                     {/* Right Column - Horoscope Form */}
                     <div style={{ flex: '1 1 380px', maxWidth: 450 }} className="animate-fade stagger-2">
-                        <form onSubmit={handleHoroscopeSubmit} className="glass-strong mystical-border" style={{
+                        <div className="glass-strong mystical-border" style={{
                             padding: '2.5rem 2rem', borderRadius: 24, display: 'flex', flexDirection: 'column', gap: '1.25rem'
                         }}>
-                            <h3 style={{ fontFamily: 'Outfit', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem', textAlign: 'center', color: '#d4af37' }}>
-                                {t('form.title')}
-                            </h3>
-                            <div>
-                                <input type="text" placeholder={t('form.name')} required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ background: 'rgba(0,0,0,0.5)' }} />
+                            <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
+                                <button type="button" onClick={() => { setActiveTab('horoscope'); setRashiResult(null); }} style={{ background: 'transparent', border: 'none', color: activeTab === 'horoscope' ? '#d4af37' : '#8a8aa8', fontWeight: activeTab === 'horoscope' ? 700 : 500, fontSize: '1rem', cursor: 'pointer', fontFamily: 'Outfit', transition: 'color 0.2s', paddingBottom: '0.25rem', borderBottom: activeTab === 'horoscope' ? '2px solid #d4af37' : '2px solid transparent' }}>Horoscope</button>
+                                <button type="button" onClick={() => { setActiveTab('rashi'); }} style={{ background: 'transparent', border: 'none', color: activeTab === 'rashi' ? '#d4af37' : '#8a8aa8', fontWeight: activeTab === 'rashi' ? 700 : 500, fontSize: '1rem', cursor: 'pointer', fontFamily: 'Outfit', transition: 'color 0.2s', paddingBottom: '0.25rem', borderBottom: activeTab === 'rashi' ? '2px solid #d4af37' : '2px solid transparent' }}>Find Rashi</button>
                             </div>
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <div style={{ flex: 1 }}>
-                                    <input type="date" required value={formData.dateOfBirth} onChange={e => setFormData({...formData, dateOfBirth: e.target.value})} style={{ background: 'rgba(0,0,0,0.5)' }} />
+                            
+                            {!rashiResult ? (
+                            <form onSubmit={activeTab === 'horoscope' ? handleHoroscopeSubmit : handleRashiSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                                <h3 style={{ fontFamily: 'Outfit', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem', textAlign: 'center', color: '#d4af37' }}>
+                                    {activeTab === 'horoscope' ? t('form.title') : 'Rashi Calculator'}
+                                </h3>
+                                <div>
+                                    <input type="text" placeholder={t('form.name')} required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ background: 'rgba(0,0,0,0.5)' }} />
                                 </div>
-                                <div style={{ flex: 1 }}>
-                                    <input type="time" required value={formData.timeOfBirth} onChange={e => setFormData({...formData, timeOfBirth: e.target.value})} style={{ background: 'rgba(0,0,0,0.5)' }} />
+                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <input type="date" required value={formData.dateOfBirth} onChange={e => setFormData({...formData, dateOfBirth: e.target.value})} style={{ background: 'rgba(0,0,0,0.5)' }} />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <TimeSelect required value={formData.timeOfBirth} onChange={e => setFormData({...formData, timeOfBirth: e.target.value})} bgStyle="rgba(0,0,0,0.5)" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <input type="text" placeholder={t('form.place')} required value={formData.placeOfBirth} onChange={e => setFormData({...formData, placeOfBirth: e.target.value})} style={{ background: 'rgba(0,0,0,0.5)' }} />
-                            </div>
-                            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem', padding: '0.875rem' }}>
-                                {t('form.submit')} <ArrowRight size={16} />
-                            </button>
-                        </form>
+                                <div>
+                                    <input type="text" placeholder={t('form.place')} required value={formData.placeOfBirth} onChange={e => setFormData({...formData, placeOfBirth: e.target.value})} style={{ background: 'rgba(0,0,0,0.5)' }} />
+                                </div>
+                                <button type="submit" disabled={rashiLoading} className="btn btn-primary" style={{ marginTop: '0.5rem', padding: '0.875rem' }}>
+                                    {rashiLoading ? 'Calculating...' : (activeTab === 'horoscope' ? t('form.submit') : 'Find My Rashi')} <ArrowRight size={16} />
+                                </button>
+                            </form>
+                            ) : (
+                                <div className="animate-fade" style={{ textAlign: 'center', padding: '1rem 0' }}>
+                                    <h3 style={{ fontFamily: 'Outfit', fontSize: '1.2rem', fontWeight: 800, color: '#f0f0f8', marginBottom: '1.5rem' }}>Your Vedic Profile</h3>
+                                    
+                                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+                                        <div style={{ flex: 1, background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.2)', borderRadius: 12, padding: '1rem' }}>
+                                            <div style={{ fontSize: '0.7rem', color: '#d4af37', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem', fontWeight: 600 }}>Rashi (Moon Sign)</div>
+                                            <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem', color: '#fff' }}>{rashiResult.rashi}</div>
+                                        </div>
+                                        <div style={{ flex: 1, background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 12, padding: '1rem' }}>
+                                            <div style={{ fontSize: '0.7rem', color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem', fontWeight: 600 }}>Nakshatra</div>
+                                            <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.1rem', color: '#fff' }}>{rashiResult.nakshatra}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <p style={{ fontSize: '0.9rem', color: '#c0c0d8', lineHeight: 1.6, marginBottom: '1.5rem', fontStyle: 'italic' }}>
+                                        "{rashiResult.description}"
+                                    </p>
+                                    
+                                    <button onClick={() => setRashiResult(null)} className="btn btn-outline" style={{ width: '100%', padding: '0.75rem' }}>
+                                        Calculate Another
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                 </div>

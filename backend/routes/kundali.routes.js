@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { generateKundali } = require('../controllers/kundali.controller');
+const { generateKundali, calculateRashi } = require('../controllers/kundali.controller');
 const { protect } = require('../middleware/auth.middleware');
 
 router.post('/generate', generateKundali);
+router.post('/rashi', calculateRashi);
 // Optional: use protect middleware if you want to force login
 // router.post('/generate', protect, generateKundali);
 

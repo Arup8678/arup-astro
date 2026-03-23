@@ -144,3 +144,37 @@ exports.generateKundali = async (req, res) => {
         res.status(500).json({ error: err.message || 'Error generating Kundali' });
     }
 };
+
+exports.calculateRashi = async (req, res) => {
+    try {
+        const { name, dateOfBirth, timeOfBirth, placeOfBirth, language = 'en' } = req.body;
+        if (!dateOfBirth || !timeOfBirth || !placeOfBirth) {
+            return res.status(400).json({ error: 'Date, time, and place of birth are required' });
+        }
+
+        const targetLanguage = language === 'bn' ? 'Bengali' : 'English';
+        const prompt = `You are an expert Vedic Astrologer. Calculate the exact Vedic Moon Sign (Rashi) and Nakshatra (Birth Star) for a person born on:
+        Date: ${dateOfBirth}
+        Time: ${timeOfBirth}
+        Place: ${placeOfBirth}
+        
+        Provide the response strictly as a JSON object, with text in the ${targetLanguage} language (but keys in English), formatted exactly like this:
+        {
+          "rashi": "String (The Moon Sign/Rashi name)",
+          "nakshatra": "String (The Nakshatra name)",
+          "description": "String (A 2-3 sentence positive description of their personality based on this Rashi and Nakshatra)"
+        }`;
+
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const aiResponse = await model.generateContent({
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
+        });
+
+        const rashiData = JSON.parse(aiResponse.response.text());
+        res.json(rashiData);
+    } catch (err) {
+        console.error('AI Rashi Calculation Error:', err);
+        res.status(500).json({ error: 'Failed to calculate Rashi and Nakshatra.' });
+    }
+};
