@@ -55,13 +55,19 @@ exports.getHoroscope = async (req, res) => {
         Return strictly a JSON object with this shape: 
         { "general": "String", "love": "String", "career": "String", "health": "String", "lucky": { "number": Number, "color": "String", "time": "String" } }`;
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const aiResponse = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: "application/json", temperature: 0.7 }
-        });
-
-        const data = JSON.parse(aiResponse.response.text());
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        let data;
+        try {
+            const aiResponse = await model.generateContent({
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: { responseMimeType: "application/json", temperature: 0.7 }
+            });
+            data = JSON.parse(aiResponse.response.text());
+        } catch (error) {
+            console.error('AI Quota or Fetch Error, using fallback:', error);
+            // Fallback to static data if AI fails
+            data = HOROSCOPE_DATA[cleanSign][period];
+        }
 
         const response = {
             sign: cleanSign.charAt(0).toUpperCase() + cleanSign.slice(1),

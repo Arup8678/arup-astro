@@ -428,7 +428,7 @@ const Home = () => {
                         />
                         <PricingCard
                             name="Full Report"
-                            price="₹99"
+                            price="₹21"
                             features={['Detailed Kundali with Dasha', 'Full Numerology audit', 'AI Personality analysis', 'Life Path forecast', 'Downloadable PDF report', 'Career & Love insights']}
                             highlighted
                             cta="Unlock Now"
@@ -436,7 +436,7 @@ const Home = () => {
                         />
                         <PricingCard
                             name="Premium Bundle"
-                            price="₹199"
+                            price="₹51"
                             features={['Everything in Full Report', 'AI Face & Palm deep reading', 'Vedic remedies & gemstones', '2026 year predictions', '30-day premium access', 'VIP priority support']}
                             cta="Go Premium"
                             link="/dashboard"

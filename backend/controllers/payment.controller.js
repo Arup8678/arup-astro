@@ -15,9 +15,9 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
 }
 
 const PLANS = {
-    mini: { amount: 4900, label: '₹49 Mini Report' },
-    full: { amount: 9900, label: '₹99 Full Report' },
-    premium: { amount: 19900, label: '₹199 Premium Destiny Bundle' },
+    mini: { amount: 1100, label: '₹11 Mini Report' },
+    full: { amount: 2100, label: '₹21 Full Report' },
+    premium: { amount: 5100, label: '₹51 Premium Destiny Bundle' },
     wallet_100: { amount: 10000, label: 'Wallet Recharge ₹100' },
     wallet_200: { amount: 20000, label: 'Wallet Recharge ₹200' },
     wallet_500: { amount: 50000, label: 'Wallet Recharge ₹500' },

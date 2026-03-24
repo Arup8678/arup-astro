@@ -235,15 +235,15 @@ const Dashboard = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
                     {[
                         {
-                            name: 'Mini Report', price: '₹49', plan: 'mini', badge: null,
+                            name: 'Mini Report', price: '₹11', plan: 'mini', badge: null,
                             features: ['One detailed report', '7-day access', 'PDF download']
                         },
                         {
-                            name: 'Full Report', price: '₹99', plan: 'full', badge: 'Popular',
+                            name: 'Full Report', price: '₹21', plan: 'full', badge: 'Popular',
                             features: ['All reports', '30-day access', 'PDF downloads', 'Career & love analysis', 'Vedic remedies']
                         },
                         {
-                            name: 'Premium Bundle', price: '₹199', plan: 'premium', badge: 'Best Value',
+                            name: 'Premium Bundle', price: '₹51', plan: 'premium', badge: 'Best Value',
                             features: ['Everything in Full', 'AI Palm + Face reading', 'Gemstone guide', 'VIP support', '2026 predictions']
                         },
                     ].map(p => (
