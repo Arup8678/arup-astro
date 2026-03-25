@@ -41,7 +41,8 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => res.json({ status: 'OK', service: 'Quantum Within API' }));
+app.get('/api/health', (req, res) => res.json({ status: 'OK', service: 'Arup Astro API' }));
+app.get('/ping', (req, res) => res.send('pong'));
 
 // Serve Frontend in Production
 if (process.env.NODE_ENV === 'production') {
@@ -62,8 +63,11 @@ app.use((err, req, res, next) => {
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected');
-    app.listen(process.env.PORT || 5000, '0.0.0.0', () => {
-      console.log(`🚀 Server running on port ${process.env.PORT || 5000}`);
+    const port = process.env.PORT || 5000;
+    const environment = process.env.NODE_ENV || 'production';
+    console.log(`🚀 Server running in ${environment} mode on port ${port}`);
+    app.listen(port, '0.0.0.0', () => {
+      console.log(`🚀 Binded to 0.0.0.0:${port}`);
     });
   })
   .catch(err => {
