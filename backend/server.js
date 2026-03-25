@@ -41,6 +41,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Health check
+app.get('/', (req, res) => res.send('Arup Astro Live Server'));
 app.get('/api/health', (req, res) => res.json({ status: 'OK', service: 'Arup Astro API' }));
 app.get('/ping', (req, res) => res.send('pong'));
 
@@ -63,7 +64,7 @@ app.use((err, req, res, next) => {
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected');
-    const port = process.env.PORT || 5000;
+    const port = process.env.PORT || 8080;
     const environment = process.env.NODE_ENV || 'production';
     console.log(`🚀 Server running in ${environment} mode on port ${port}`);
     app.listen(port, '0.0.0.0', () => {
